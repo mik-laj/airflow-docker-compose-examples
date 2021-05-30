@@ -33,7 +33,7 @@ AIRFLOW_WWW_USER_PASSWORD=${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
 DAG_ID="example_bash_operator"
 DAG_RUN_ID="test_dag_run_id"
 
-cp "/Users/kamilbregula/devel/airflow/airflow/airflow/example_dags/example_bash_operator.py" "./dags"
+curl 'https://raw.githubusercontent.com/apache/airflow/master/airflow/example_dags/example_bash_operator.py' -o './dags/example_bash_operator.py'
 
 function wait_for_webserver {
     echo "Waiting for webserver"
