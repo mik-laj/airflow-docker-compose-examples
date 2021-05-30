@@ -14,6 +14,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: pip install httpx jsonschema PyYAML
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - run: pip install httpx jsonschema PyYAML semver
       - run: ./render_all.sh
       - run: ./test_all.sh
