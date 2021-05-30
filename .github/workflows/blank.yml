@@ -14,5 +14,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - run: pip install httpx jsonschema yaml
       - run: ./render_all.sh
       - run: ./test_all.sh
