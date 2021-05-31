@@ -45,4 +45,10 @@ function wait_for_container {
         sleep 1;
     done;
 }
-wait_for_container "$1"
+
+if ! docker inspect "${CONTAINER_ID}" &>/dev/null; then
+    echo "Container does not exists"
+    exit 1
+fi
+
+wait_for_container "$CONTAINER_ID"
