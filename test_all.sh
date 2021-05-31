@@ -92,27 +92,6 @@ function wait_for_dag_run {
     done;
 }
 
-function wait_for_container {
-    container_id="$1"
-    container_name="$(docker inspect "${container_id}" --format '{{ .Name }}')"
-    echo "Waiting for container: ${container_name} [${container_id}]"
-    waiting_done="false"
-    while [[ "${waiting_done}" != "true" ]]; do
-        container_state="$(docker inspect "${container_id}" --format '{{ .State.Status }}')"
-        if [[ "${container_state}" == "running" ]]; then
-            health_status="$(docker inspect "${container_id}" --format '{{ .State.Health.Status }}')"
-            echo "${container_name}: container_state=${container_state}, health_status=${health_status}"
-            if [[ ${health_status} == "healthy" ]]; then
-                waiting_done="true"
-            fi
-        else
-            echo "${container_name}: container_state=${container_state}"
-            waiting_done="true"
-        fi
-        sleep 1;
-    done;
-}
-
 function test_compose_file() {
     compose_file="$1"
     if ! COMPOSE_FILE="${compose_file}" docker-compose config &> "${tmp_output}"; then
@@ -128,9 +107,7 @@ function test_compose_file() {
         exit 1;
     fi
 
-    COMPOSE_FILE="${compose_file}" docker-compose ps -q | while IFS= read -r container_id; do
-        wait_for_container "${container_id}"
-    done
+    COMPOSE_FILE="${compose_file}" docker-compose ps -q | xargs -n 1 -P 8 ./wait-for-container.sh
 
     if ! curl -s -X PATCH \
         --header "Content-Type: application/json" \
