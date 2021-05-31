@@ -6,7 +6,7 @@ function usage() {
 CMDNAME="$(basename -- "$0")"
 
   cat << EOF
-Usage: ${CMDNAME} <contatiner_id>
+Usage: ${CMDNAME} <container_id>
 
 Waits for the container to be in a healthy condition.
 
