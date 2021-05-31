@@ -219,8 +219,8 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-{% endif %}
 
+{% endif %}
 volumes:
 {% if db_backend == 'postgres' %}
   postgres-db-volume:
