@@ -13,57 +13,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, ubuntu-20.04, macos-10.15]
+        os: [ubuntu-18.04, ubuntu-20.04]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: Dump job context
-        env:
-          JOB_CONTEXT: ${{ toJSON(job) }}
-        run: echo "$JOB_CONTEXT"
-      - name: Dump steps context
-        env:
-          STEPS_CONTEXT: ${{ toJSON(steps) }}
-        run: echo "$STEPS_CONTEXT"
-      - name: Dump runner context
-        env:
-          RUNNER_CONTEXT: ${{ toJSON(runner) }}
-        run: echo "$RUNNER_CONTEXT"
-      - name: Dump strategy context
-        env:
-          STRATEGY_CONTEXT: ${{ toJSON(strategy) }}
-        run: echo "$STRATEGY_CONTEXT"
-      - name: Dump matrix context
-        env:
-          MATRIX_CONTEXT: ${{ toJSON(matrix) }}
-        run: echo "$MATRIX_CONTEXT"
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: '3.8'
       - run: pip install httpx jsonschema PyYAML semver jinja2
-      - if: runner.os == 'MacOS'
-        uses: docker-practice/actions-setup-docker@master
       - run: |
           docker run --rm "debian:buster-slim" bash -c 'numfmt --to iec $(echo $(($(getconf _PHYS_PAGES) * $(getconf PAGE_SIZE))))'
       - run: |
           docker --version
           docker-compose --version
-      - if: runner.os == 'Linux'
-        run: |
+      - run: |
           mkdir ./dags ./logs ./plugins;
           echo -e "AIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0" > .env
       - run: ./render_all.sh
       - run: ./test_all.sh
-      - if: always()
-        run: docker ps
-      - if: always()
-        run: |
-          docker container ls -a -q | xargs -n 1 bash -c '
-            echo "::group::${0}";
-            docker logs -- "${0}";
-            echo "::endgroup::"
-          '
