@@ -81,7 +81,7 @@ def main() -> None:
     parser = get_parser()
     args = parser.parse_args()
     if args.airflow_version < semver.VersionInfo.parse("2.1.0"):
-        print(f"Unsupported Airflow version [{args.airflow_version}]. At least version 2.1 is required.", file=sys.stderr)
+        print(f"Unsupported Airflow version [{args.airflow_version}]. At least version 2.1.0 is required.", file=sys.stderr)
         sys.exit(1)
     print(
         render_docker_compose(
