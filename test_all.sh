@@ -160,7 +160,7 @@ function test_compose_file() {
 
 }
 
-find . -name '*.docker-compose.yaml' -type f -maxdepth 1 -print0 | while IFS= read -r -d '' compose_file; do
+find compose-files -name 'docker-compose.yaml' -type f -maxdepth 1 -print0 | while IFS= read -r -d '' compose_file; do
     echo "Processing file: ${compose_file}"
     test_compose_file "$compose_file"
 done
