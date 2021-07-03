@@ -103,11 +103,20 @@ function test_compose_file() {
         cat "${tmp_output}"
         exit 1;
     fi
+    COMPOSE_FILE="${compose_file}" docker-compose config
     COMPOSE_FILE="${compose_file}" docker-compose down --volumes --remove-orphans &> /dev/null || true
+
+    if ! COMPOSE_FILE="${compose_file}" docker-compose pull &> "${tmp_output}"; then
+        echo "All images could not be started"
+        cat "${tmp_output}"
+        exit 1;
+    fi
 
     if ! COMPOSE_FILE="${compose_file}" docker-compose up -d &> "${tmp_output}"; then
         echo "All services could not be started"
         cat "${tmp_output}"
+        COMPOSE_FILE="${compose_file}" docker-compose ps
+        COMPOSE_FILE="${compose_file}" docker-compose logs
         exit 1;
     fi
 
