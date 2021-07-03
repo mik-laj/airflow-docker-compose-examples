@@ -1,0 +1,6 @@
+httpx
+jsonschema
+PyYAML
+semver
+jinja2
+pytest
