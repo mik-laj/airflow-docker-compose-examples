@@ -95,7 +95,7 @@ function wait_for_dag_run {
 function test_compose_file() {
     compose_file="$1"
     compose_dir="$(dirname "${compose_file}")"
-    mkdir -p "${compose_dir}/dags"
+    mkdir -p "${compose_dir}/dags" "${compose_dir}/logs" "${compose_dir}/plugins"
     curl -s 'https://raw.githubusercontent.com/apache/airflow/master/airflow/example_dags/example_bash_operator.py' -o "${compose_dir}/dags/example_bash_operator.py"
     echo -e "AIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0" > "${compose_dir}/.env"
     if ! COMPOSE_FILE="${compose_file}" docker-compose config &> "${tmp_output}"; then
