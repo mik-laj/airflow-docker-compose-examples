@@ -21,8 +21,5 @@ jobs:
         with:
           python-version: '3.8'
       - run: pip install httpx jsonschema PyYAML semver jinja2
-      - run: |
-          mkdir ./dags ./logs ./plugins;
-          echo -e "AIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0" > .env
-      - run: ./render_all.sh
-      - run: ./test_all.sh
+      - run: bash -x ./render_all.sh
+      - run: bash -x ./test_all.sh
