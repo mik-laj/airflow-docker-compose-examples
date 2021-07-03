@@ -94,16 +94,29 @@ function wait_for_dag_run {
 
 function test_compose_file() {
     compose_file="$1"
+    compose_dir="$(dirname "${compose_file}")"
+    mkdir -p "${compose_dir}/dags" "${compose_dir}/logs" "${compose_dir}/plugins"
+    curl -s 'https://raw.githubusercontent.com/apache/airflow/master/airflow/example_dags/example_bash_operator.py' -o "${compose_dir}/dags/example_bash_operator.py"
+    echo -e "AIRFLOW_UID=$(id -u)\nAIRFLOW_GID=0" > "${compose_dir}/.env"
     if ! COMPOSE_FILE="${compose_file}" docker-compose config &> "${tmp_output}"; then
         echo "File unparsable"
         cat "${tmp_output}"
         exit 1;
     fi
+    COMPOSE_FILE="${compose_file}" docker-compose config
     COMPOSE_FILE="${compose_file}" docker-compose down --volumes --remove-orphans &> /dev/null || true
+
+    if ! COMPOSE_FILE="${compose_file}" docker-compose pull &> "${tmp_output}"; then
+        echo "All images could not be started"
+        cat "${tmp_output}"
+        exit 1;
+    fi
 
     if ! COMPOSE_FILE="${compose_file}" docker-compose up -d &> "${tmp_output}"; then
         echo "All services could not be started"
         cat "${tmp_output}"
+        COMPOSE_FILE="${compose_file}" docker-compose ps
+        COMPOSE_FILE="${compose_file}" docker-compose logs
         exit 1;
     fi
 
@@ -157,7 +170,7 @@ function test_compose_file() {
 
 }
 
-find . -name '*.docker-compose.yaml' -type f -maxdepth 1 -print0 | while IFS= read -r -d '' compose_file; do
+find compose-files -name 'docker-compose.yaml' -type f -print0 | while IFS= read -r -d '' compose_file; do
     echo "Processing file: ${compose_file}"
     test_compose_file "$compose_file"
 done

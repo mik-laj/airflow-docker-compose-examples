@@ -22,7 +22,24 @@ PROJECT_SOURCES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 cd "${PROJECT_SOURCES}"
 
-./render.py --executor=CeleryExecutor --airflow-version 2.1.0 --db-backend postgres > celery-executor--2.1.0--postgres.docker-compose.yaml
-./render.py --executor=LocalExecutor --airflow-version 2.1.0 --db-backend postgres > local-executor--2.1.0--postgres.docker-compose.yaml
-./render.py --executor=CeleryExecutor --airflow-version 2.1.0 --db-backend mysql > celery-executor--2.1.0--mysql.docker-compose.yaml
-./render.py --executor=LocalExecutor --airflow-version 2.1.0 --db-backend mysql > local-executor--2.1.0--mysql.docker-compose.yaml
+AIRFLOW_VERSION=2.1.0
+mkdir -p compose-files/celery-executor--postgres
+./render.py --executor=CeleryExecutor \
+    --airflow-version "${AIRFLOW_VERSION}" \
+    --db-backend postgres \
+    > compose-files/celery-executor--postgres/docker-compose.yaml
+mkdir -p compose-files/local-executor--postgres
+./render.py --executor=LocalExecutor \
+    --airflow-version "${AIRFLOW_VERSION}" \
+    --db-backend postgres \
+    > compose-files/local-executor--postgres/docker-compose.yaml
+mkdir -p compose-files/celery-executor--mysql
+./render.py --executor=CeleryExecutor \
+    --airflow-version "${AIRFLOW_VERSION}" \
+    --db-backend mysql \
+    > compose-files/celery-executor--mysql/docker-compose.yaml
+mkdir -p compose-files/local-executor--mysql
+./render.py --executor=LocalExecutor \
+    --airflow-version "${AIRFLOW_VERSION}" \
+    --db-backend mysql \
+    > compose-files/local-executor--mysql/docker-compose.yaml
