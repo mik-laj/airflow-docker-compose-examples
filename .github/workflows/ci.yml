@@ -20,6 +20,12 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: '3.8'
-      - run: pip install httpx jsonschema PyYAML semver jinja2
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - run: pip install -r requirements.txt
       - run: bash -x ./render_all.sh
-      - run: bash -x ./test_all.sh
+      - run: pytest tests/ --color=yes

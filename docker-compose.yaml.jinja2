@@ -20,6 +20,8 @@
 # Basic Airflow cluster configuration for CeleryExecutor with Redis and {% if db_backend == 'postgres' %}PostgreSQL{% else %}MySQL{% endif %}.
 {% elif executor == "LocalExecutor" %}
 # Basic Airflow cluster configuration for LocalExecutor with {% if db_backend == 'postgres' %}PostgreSQL{% else %}MySQL{% endif %}.
+{% else %}
+{{ fail("Unsupported executor:  " + executor) }}
 {% endif %}
 #
 # WARNING: This configuration is for local development. Do not use it in a production deployment.

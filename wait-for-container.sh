@@ -46,6 +46,11 @@ function wait_for_container {
     done;
 }
 
+if ! command -v docker; then
+    echo 'The "docker" command found.'
+    exit 1
+fi
+
 if ! docker inspect "${CONTAINER_ID}" &>/dev/null; then
     echo "Container does not exists"
     exit 1
