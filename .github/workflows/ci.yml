@@ -13,22 +13,37 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, ubuntu-20.04]
-        compose_version: [v2]
+        os:
+          - ubuntu-18.04
+          - ubuntu-20.04]
+        compose_version:
+          - 1.29.2
+          - 1.29.1
+          - 1.29.0
+          - 2
         airflow_version:
           - 2.1.0
           - 2.1.1
           - 2.1.1rc1
           - master
     concurrency:
-      group: ${{ github.event.pull_request.number || github.ref }}-${{ matrix.on }}-${{ matrix.airflow_version }}-${{ matrix.compose_version }}
+      group: ${{ github.event.pull_request.number || github.ref }}}-${{ matrix.os }}-${{ matrix.compose_version }}-${{ matrix.airflow_version }}
       cancel-in-progress: true
     runs-on: ${{ matrix.os }}
     env:
       AIRFLOW_IMAGE_NAME: 'apache/airflow:${{ matrix.airflow_version }}'
     steps:
       - uses: actions/checkout@v2
-      - if: matrix.compose_version == 'v2'
+      - if: matrix.compose_version != '2'
+        name: "Update Docker compose"
+        env:
+          COMPOSE_VERSION: ${{ matrix.compose_version }}
+        run: |
+          sudo rm -rf $(command -v docker-compose)
+          curl -fsSL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o docker-compose
+          chmod +x docker-compose
+          sudo mv docker-compose /usr/local/bin/docker-compose
+      - if: matrix.compose_version == '2'
         name: "Update Docker CLI and Docker compose"
         run: |
           sudo rm "$(command -v docker)";
