@@ -15,7 +15,7 @@ jobs:
       matrix:
         os:
           - ubuntu-18.04
-          - ubuntu-20.04]
+          - ubuntu-20.04
         compose_version:
           - 1.29.2
           - 1.29.1
