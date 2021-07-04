@@ -15,9 +15,8 @@ jobs:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04]
         compose_version: [v1, v2]
-
     concurrency:
-      group: ${{ github.event.pull_request.number || github.ref }}
+      group: ${{ github.event.pull_request.number || github.ref }}-${{ matrix.compose_version }}-${{ matrix.on }}
       cancel-in-progress: true
     runs-on: ${{ matrix.os }}
     steps:
