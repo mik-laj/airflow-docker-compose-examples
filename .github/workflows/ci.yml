@@ -20,7 +20,7 @@ jobs:
           - 1.29.0
           - 2
     concurrency:
-      group: ${{ github.event.pull_request.number || github.ref }}-${{ matrix.compose_version }}-${{ matrix.on }}
+      group: ${{ github.event.pull_request.number || github.ref }}-${{ matrix.compose_version }}-${{ matrix.os }}
       cancel-in-progress: true
     runs-on: ${{ matrix.os }}
     steps:
