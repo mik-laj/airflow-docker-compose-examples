@@ -30,8 +30,6 @@ jobs:
       group: ${{ github.event.pull_request.number || github.ref }}-${{ matrix.os }}-${{ matrix.compose_version }}-${{ matrix.airflow_version }}
       cancel-in-progress: true
     runs-on: ${{ matrix.os }}
-    env:
-      AIRFLOW_IMAGE_NAME: 'apache/airflow:${{ matrix.airflow_version }}'
     steps:
       - uses: actions/checkout@v2
       - if: matrix.compose_version != '2'
