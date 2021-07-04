@@ -1,0 +1,19 @@
+---
+default_stages: [commit, push]
+default_language_version:
+  python: python3
+minimum_pre_commit_version: "1.20.0"
+repos:
+  - repo: local
+    hooks:
+      - id: render_all
+        name: Render docker-compose files
+        language: python
+        entry: ./render_all.sh
+        files: '.*'
+        additional_dependencies:
+          - httpx
+          - jsonschema
+          - PyYAML
+          - semver
+          - jinja2

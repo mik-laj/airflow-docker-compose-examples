@@ -26,6 +26,6 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
+      - uses: pre-commit/action@v2.0.3
       - run: pip install -r requirements.txt
-      - run: bash -x ./render_all.sh
       - run: pytest tests/ --color=yes
