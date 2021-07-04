@@ -29,15 +29,14 @@ jobs:
           curl -fsSL https://test.docker.com | sh;
           echo "Installed docker"
           sudo rm -rf $(command -v docker-compose)
-          curl -L https://raw.githubusercontent.com/docker/compose-cli/main/scripts/install/install_linux.sh | sed 's#releases/latest#releases/44952910#g' | tee /dev/tty | sh
-#          TMP_DIR="$(mktemp -d)"
-#          curl -fsSL https://github.com/docker/compose-cli/releases/download/v2.0.0-beta.4/docker-compose-linux-amd64 -o "${TMP_DIR}/docker-compose-v2"
-#          chmod +x "${TMP_DIR}/docker-compose-v2"
-#          echo -e '#!/bin/bash\nexec docker-compose-v2 compose "${@}"' > "${TMP_DIR}/docker-compose"
-#          chmod +x "${TMP_DIR}/docker-compose"
-#          export PATH="${TMP_DIR}:${PATH}"
-#          echo "PATH=${PATH}" >> $GITHUB_ENV
-#          echo "Installed docker-compose v2"
+          TMP_DIR="$(mktemp -d)"
+          curl -fsSL https://github.com/docker/compose-cli/releases/download/v2.0.0-beta.4/docker-compose-linux-amd64 -o "${TMP_DIR}/docker-compose-v2"
+          chmod +x "${TMP_DIR}/docker-compose-v2"
+          echo -e '#!/bin/bash\nexec docker-compose-v2 compose "${@}"' > "${TMP_DIR}/docker-compose"
+          chmod +x "${TMP_DIR}/docker-compose"
+          export PATH="${TMP_DIR}:${PATH}"
+          echo "PATH=${PATH}" >> $GITHUB_ENV
+          echo "Installed docker-compose v2"
       - uses: actions/setup-python@v2
         with:
           python-version: '3.8'
