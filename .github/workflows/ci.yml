@@ -15,10 +15,30 @@ jobs:
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04]
         compose_version: [v1, v2]
+        airflow_version:
+          - 2.0.0
+          - 2.0.0b1
+          - 2.0.0b2
+          - 2.0.0b3
+          - 2.0.0rc1
+          - 2.0.0rc2
+          - 2.0.0rc3
+          - 2.0.1
+          - 2.0.1rc1
+          - 2.0.1rc2
+          - 2.0.2
+          - 2.0.2rc1
+          - 2.1.0
+          - 2.1.0rc1
+          - 2.1.0rc2
+          - 2.1.1
+          - 2.1.1rc1
     concurrency:
-      group: ${{ github.event.pull_request.number || github.ref }}-${{ matrix.compose_version }}-${{ matrix.on }}
+      group: ${{ github.event.pull_request.number || github.ref }}-${{ matrix.on }}-${{ matrix.airflow_version }}-${{ matrix.compose_version }}
       cancel-in-progress: true
     runs-on: ${{ matrix.os }}
+    env:
+      AIRFLOW_IMAGE_NAME: 'apache/airflow:${{ matrix.airflow_version }}'
     steps:
       - uses: actions/checkout@v2
       - if: matrix.compose_version == 'v2'
