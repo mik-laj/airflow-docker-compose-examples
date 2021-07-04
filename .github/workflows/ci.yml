@@ -14,14 +14,54 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-18.04, ubuntu-20.04]
-        compose_version: [v1, v2]
+        compose_version:
+          - 1.29.2
+          - 1.29.1
+          - 1.29.0
+          - 1.28.6
+          - 1.28.5
+          - 1.28.4
+          - 1.28.3
+          - 1.28.2
+          - 1.28.0
+          - 1.28.0-rc3
+          - 1.28.0-rc2
+          - 1.28.0-rc1
+          - 1.27.4
+          - 1.27.3
+          - 1.27.2
+          - 1.27.1
+          - 1.27.0
+          - 1.27.0-rc4
+          - 1.27.0-rc3
+          - 1.27.0-rc2
+          - 1.27.0-rc1
+          - 1.26.2
+          - 1.26.1
+          - 1.26.0
+          - 1.26.0-rc5
+          - 1.26.0-rc4
+          - 1.25.5
+          - 1.25.5-rc1
+          - 1.26.0-rc3
+          - 1.26.0-rc2
+          - 2
     concurrency:
       group: ${{ github.event.pull_request.number || github.ref }}-${{ matrix.compose_version }}-${{ matrix.on }}
       cancel-in-progress: true
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - if: matrix.compose_version == 'v2'
+      - if: matrix.compose_version != '2'
+        name: "Update Docker compose"
+        env:
+          COMPOSE_VERSION: ${{ matrix.compose_version }}
+        run: |
+          sudo rm -rf $(command -v docker-compose)
+          curl -fsSL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o docker-compose
+          chmod +x docker-compose
+          sudo mv docker-compose /usr/local/bin/docker-compose
+      - if: matrix.compose_version == '2'
         name: "Update Docker CLI and Docker compose"
         run: |
           sudo rm "$(command -v docker)";
