@@ -27,7 +27,7 @@ jobs:
           - 2.1.1rc1
           - master
     concurrency:
-      group: ${{ github.event.pull_request.number || github.ref }}}-${{ matrix.os }}-${{ matrix.compose_version }}-${{ matrix.airflow_version }}
+      group: ${{ github.event.pull_request.number || github.ref }}-${{ matrix.os }}-${{ matrix.compose_version }}-${{ matrix.airflow_version }}
       cancel-in-progress: true
     runs-on: ${{ matrix.os }}
     env:
