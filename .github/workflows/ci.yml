@@ -13,14 +13,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, ubuntu-20.04]
+        os:
+          - ubuntu-18.04
+          - ubuntu-20.04
         compose_version:
           - 1.29.2
           - 1.29.1
           - 1.29.0
           - 2
+        airflow_version:
+          - 2.1.0
+          - 2.1.1
+          - 2.1.1rc1
+          - master
     concurrency:
-      group: ${{ github.event.pull_request.number || github.ref }}-${{ matrix.compose_version }}-${{ matrix.os }}
+      group: ${{ github.event.pull_request.number || github.ref }}-${{ matrix.os }}-${{ matrix.compose_version }}-${{ matrix.airflow_version }}
       cancel-in-progress: true
     runs-on: ${{ matrix.os }}
     steps:
@@ -49,6 +56,16 @@ jobs:
           export PATH="${TMP_DIR}:${PATH}"
           echo "PATH=${PATH}" >> $GITHUB_ENV
           echo "Installed docker-compose v2"
+      - if: matrix.airflow_version != 'master'
+        env:
+          AIRFLOW_IMAGE_NAME: 'apache/airflow:${{ matrix.airflow_version }}'
+        run: |
+          echo "AIRFLOW_IMAGE_NAME=${AIRFLOW_IMAGE_NAME}" >> $GITHUB_ENV
+      - if: matrix.airflow_version == 'master'
+        env:
+          AIRFLOW_IMAGE_NAME: 'apache/airflow-ci:main-python3.8'
+        run: |
+          echo "AIRFLOW_IMAGE_NAME=${AIRFLOW_IMAGE_NAME}" >> $GITHUB_ENV
       - uses: actions/setup-python@v2
         with:
           python-version: '3.8'
