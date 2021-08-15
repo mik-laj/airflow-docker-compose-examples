@@ -10,7 +10,7 @@ repos:
         name: Render docker-compose files
         language: python
         entry: ./render_all.sh
-        files: '.*'
+        always_run: true
         additional_dependencies:
           - httpx
           - jsonschema
