@@ -44,3 +44,13 @@ mkdir -p compose-files/local-executor--mysql
     --airflow-version "${AIRFLOW_VERSION}" \
     --db-backend mysql \
     > compose-files/local-executor--mysql/docker-compose.yaml
+mkdir -p compose-files/local-executor--mssql
+./render.py --executor=LocalExecutor \
+    --airflow-version "${AIRFLOW_VERSION}" \
+    --db-backend mssql \
+    > compose-files/local-executor--mssql/docker-compose.yaml
+mkdir -p compose-files/celery-executor--mssql
+./render.py --executor=CeleryExecutor \
+    --airflow-version "${AIRFLOW_VERSION}" \
+    --db-backend mssql \
+    > compose-files/celery-executor--mssql/docker-compose.yaml

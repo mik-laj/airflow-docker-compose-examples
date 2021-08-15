@@ -62,13 +62,13 @@ All examples in this repository generated from one Jinja2 template - [`./docker-
 ```
 usage: ./render.py [-h] --executor {CeleryExecutor,LocalExecutor}
                    --airflow-version AIRFLOW_VERSION
-                   [--db-backend {postgres,mysql}]
+                   [--db-backend {postgres,mysql,mssql}]
 
 optional arguments:
   -h, --help            show this help message and exit
   --executor {CeleryExecutor,LocalExecutor}
   --airflow-version AIRFLOW_VERSION
-  --db-backend {postgres,mysql}
+  --db-backend {postgres,mysql,mssql}
 
 ```
 <!-- USAGE_END -->

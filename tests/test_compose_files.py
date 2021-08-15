@@ -69,6 +69,10 @@ def run_cmd(args, **kwargs):
 
 @pytest.mark.parametrize("compose_file", COMPOSE_FILES)
 def test_valid_components(compose_file):
+    if 'mssql' in str(compose_file) and not os.environ.get('AIRFLOW_IMAGE_NAME').startswith(
+        'ghcr.io/apache/airflow/main/prod/python3.6'
+    ):
+        pytest.skip("Unsupported configuration: MSSQL is supported on development builds only")
     with tempfile.TemporaryDirectory() as tmp_dir, tmp_chdir(tmp_dir) as orig_cwd:
         os.mkdir("dags")
         os.mkdir("logs")

@@ -16,25 +16,7 @@
 # under the License.
 #
 
-{% macro db_pretty_name(name) -%}
-    {%- if db_backend == 'postgres' -%}
-        PostgreSQL
-    {%- elif db_backend == 'mysql' -%}
-        MySQL
-    {%- elif db_backend == 'mssql' -%}
-        Microsoft SQL
-    {%- else -%}
-        {{ fail("Unsupported database:  " + name) }}
-    {%- endif -%}
-{% endmacro -%}
-
-{% if executor == "CeleryExecutor" %}
-# Basic Airflow cluster configuration for CeleryExecutor with Redis and {{ db_pretty_name(db_backend) }}.
-{% elif executor == "LocalExecutor" %}
-# Basic Airflow cluster configuration for LocalExecutor with {{ db_pretty_name(db_backend) }}.
-{% else %}
-{{ fail("Unsupported executor:  " + executor) }}
-{% endif %}
+# Basic Airflow cluster configuration for CeleryExecutor with Redis and Microsoft SQL.
 #
 # WARNING: This configuration is for local development. Do not use it in a production deployment.
 #
@@ -42,7 +24,7 @@
 # The following variables are supported:
 #
 # AIRFLOW_IMAGE_NAME         - Docker image name used to run Airflow.
-#                              Default: apache/airflow:{{ airflow_version }}
+#                              Default: apache/airflow:2.1.4
 # AIRFLOW_UID                - User ID in Airflow containers
 #                              Default: 50000
 # AIRFLOW_GID                - Group ID in Airflow containers
@@ -56,40 +38,15 @@
 ---
 x-airflow-common:
   &airflow-common
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:{{ airflow_version }}}
+  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.1.4}
   environment:
     &airflow-common-env
-{% if executor == "CeleryExecutor" %}
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
-{% elif executor == "LocalExecutor" %}
-    AIRFLOW__CORE__EXECUTOR: LocalExecutor
-{% else %}
-    {{ fail("Unsupported exeutor:  " + executor) }}
-{% endif %}
-{% if db_backend == 'postgres' %}
-    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-{% elif db_backend == 'mysql' %}
-    AIRFLOW__CORE__SQL_ALCHEMY_CONN: mysql+mysqldb://root:airflow@mysql/airflow?charset=utf8mb4
-    AIRFLOW__CORE__SQL_ENGINE_COLLATION_FOR_IDS: utf8mb3_general_ci
-{% elif db_backend == 'mssql' %}
     AIRFLOW__CORE__SQL_ALCHEMY_CONN: "mssql+pyodbc://sa:Airflow123@mssql:1433/airflow?\
       driver=ODBC+Driver+17+for+SQL+Server"
-{% else %}
-    {{ fail("Unsupported baackend:  " + db_backend) }}
-{% endif %}
-{% if executor == "CeleryExecutor" %}
     AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
-{% if db_backend == 'postgres' %}
-    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
-{% elif db_backend == 'mysql' %}
-    AIRFLOW__CELERY__RESULT_BACKEND: db+mysql://root:airflow@mysql/airflow?charset=utf8mb4
-{% elif db_backend == 'mssql' %}
     AIRFLOW__CELERY__RESULT_BACKEND: "db+mssql+pyodbc://sa:airflow@mssql:1433/airflow?\
       driver=ODBC+Driver+17+for+SQL+Server"
-{% else %}
-    {{ fail("Unsupported baackend:  " + db_backend) }}
-{% endif %}
-{% endif %}
     AIRFLOW__CORE__FERNET_KEY: ''
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
@@ -101,66 +58,14 @@ x-airflow-common:
   user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
   depends_on:
     &airflow-common-depends-on
-{% if executor == "CeleryExecutor" %}
     redis:
       condition: service_healthy
-{% endif %}
-{% if db_backend == 'postgres' %}
-    postgres:
-      condition: service_healthy
-{% elif db_backend == 'mysql' %}
-    mysql:
-      condition: service_healthy
-{% elif db_backend == 'mssql' %}
     mssql:
       condition: service_healthy
     mssqlsetup:
       condition: service_completed_successfully
-{% else %}
-    {{ fail("Unsupported baackend:  " + db_backend) }}
-{% endif %}
 
 services:
-{% if db_backend == 'postgres' %}
-  postgres:
-    image: postgres:13
-    environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
-    ports:
-      - 5432:5432
-    volumes:
-      - postgres-db-volume:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
-      interval: 5s
-      retries: 5
-    restart: always
-{% elif db_backend == 'mysql' %}
-  mysql:
-    image: mysql:8
-    environment:
-      MYSQL_ROOT_PASSWORD: airflow
-      MYSQL_DATABASE: airflow
-    ports:
-      - 3306:3306
-    command:
-      - mysqld
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-      - --explicit_defaults_for_timestamp
-    volumes:
-      - mysql-db-volume:/var/lib/mysql
-    healthcheck:
-      test: [
-        "CMD-SHELL", 'mysql -h localhost -P 3306 -u root --password="$${MYSQL_ROOT_PASSWORD}" -e "SELECT 1"'
-      ]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-    restart: always
-{% elif db_backend == 'mssql' %}
   mssql:
     image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
@@ -188,11 +93,7 @@ services:
       - bash
       - -c
       - opt/mssql-tools/bin/sqlcmd -S mssql -U sa -P Airflow123 -Q "$${INIT_SQL}" || true
-{% else %}
-    {{ fail("Unsupported baackend:  " + db_backend) }}
-{% endif %}
 
-{% if executor == "CeleryExecutor" %}
   redis:
     image: redis:latest
     ports:
@@ -204,7 +105,6 @@ services:
       retries: 50
     restart: always
 
-{% endif %}
   airflow-webserver:
     <<: *airflow-common
     command: webserver
@@ -235,7 +135,6 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
-{% if executor == "CeleryExecutor" %}
   airflow-worker:
     <<: *airflow-common
     command: celery worker
@@ -252,7 +151,6 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
-{% endif %}
   airflow-init:
     <<: *airflow-common
     command: version
@@ -276,7 +174,6 @@ services:
       - -c
       - airflow
 
-{% if executor == "CeleryExecutor" %}
   flower:
     <<: *airflow-common
     command: celery flower
@@ -293,14 +190,5 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
-{% endif %}
 volumes:
-{% if db_backend == 'postgres' %}
-  postgres-db-volume:
-{%- elif db_backend == 'mssql' %}
   mssql-db-volume:
-{%- elif db_backend == 'mysql' %}
-  mysql-db-volume:
-{%- else -%}
-    {{ fail("Unsupported baackend:  " + db_backend) }}
-{%- endif -%}
