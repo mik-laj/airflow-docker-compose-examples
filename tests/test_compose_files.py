@@ -35,11 +35,13 @@ def api_request(method, path, base_url="http://localhost:8080/api/v1/", **kwargs
 
 
 def wait_for_dag_state(dag_id, dag_run_id):
-    dag_state = "running"
-    while dag_state == "running":
+    # Wait 30 seconds
+    for _ in range(30):
         dag_state = api_request("GET", f"dags/{dag_id}/dagRuns/{dag_run_id}").get("state")
         print(f"Waiting for DAG Run: dag_state={dag_state}")
         sleep(1)
+        if dag_state in ("success", "failed"):
+            break
 
 
 @contextlib.contextmanager
