@@ -47,4 +47,4 @@ else
     sudo mv docker-compose "${COMPOSE_BIN}"
 fi
 
-docker-compose --version
+docker-compose -v
