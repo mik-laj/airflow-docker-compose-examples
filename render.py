@@ -68,7 +68,6 @@ def render_docker_compose(
 def get_parser() -> ArgumentParser:
     parser = ArgumentParser(
         prog=__file__,
-        description="Render"
     )
     parser.add_argument('--executor', choices=('CeleryExecutor', 'LocalExecutor'), required=True)
     parser.add_argument('--airflow-version', type=semver.VersionInfo.parse, required=True)

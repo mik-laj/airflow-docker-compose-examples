@@ -17,3 +17,14 @@ repos:
           - PyYAML
           - semver
           - jinja2
+      - id: pre_commit_insert_usage
+        name: Insert Usage help in README.md
+        language: python
+        entry: ./scripts/pre_commit_insert_usage.py
+        files: '^README.md|redner\.py$'
+        additional_dependencies:
+          - httpx
+          - jsonschema
+          - PyYAML
+          - semver
+          - jinja2
