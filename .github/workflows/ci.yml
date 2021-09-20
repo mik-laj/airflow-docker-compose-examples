@@ -19,7 +19,7 @@ jobs:
           - 1.29.2
           - 1.29.1
           - 1.29.0
-          - 2
+          - 2.0.0
         airflow_version:
           - current
     concurrency:
@@ -28,30 +28,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - if: matrix.compose_version != '2'
-        name: "Update Docker compose"
-        env:
-          COMPOSE_VERSION: ${{ matrix.compose_version }}
-        run: |
-          sudo rm -rf $(command -v docker-compose)
-          curl -fsSL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o docker-compose
-          chmod +x docker-compose
-          sudo mv docker-compose /usr/local/bin/docker-compose
       - if: matrix.compose_version == '2'
-        name: "Update Docker CLI and Docker compose"
+        name: "Update Docker CLI"
         run: |
           sudo rm "$(command -v docker)";
           curl -fsSL https://test.docker.com | sh;
-          echo "Installed docker"
-          sudo rm -rf $(command -v docker-compose)
-          TMP_DIR="$(mktemp -d)"
-          curl -fsSL https://github.com/docker/compose-cli/releases/download/v2.0.0-beta.4/docker-compose-linux-amd64 -o "${TMP_DIR}/docker-compose-v2"
-          chmod +x "${TMP_DIR}/docker-compose-v2"
-          echo -e '#!/bin/bash\nexec docker-compose-v2 compose "${@}"' > "${TMP_DIR}/docker-compose"
-          chmod +x "${TMP_DIR}/docker-compose"
-          export PATH="${TMP_DIR}:${PATH}"
-          echo "PATH=${PATH}" >> $GITHUB_ENV
-          echo "Installed docker-compose v2"
+      - name: "Install Docker Compose"
+        env:
+          COMPOSE_VERSION: ${{ matrix.compose_version }}
+        run: |
+          ./scripts/install_compose.sh "${COMPOSE_VERSION}"
       - if: matrix.airflow_version == 'master'
         env:
           AIRFLOW_IMAGE_NAME: 'apache/airflow-ci:main-python3.8'
