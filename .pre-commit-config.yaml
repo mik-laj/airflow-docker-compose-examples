@@ -47,6 +47,8 @@ repos:
         args:
           - "--maxlevel"
           - "2"
+          - "--title"
+          - "**Table of Contents**"
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
     hooks:
