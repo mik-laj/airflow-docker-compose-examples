@@ -36,9 +36,6 @@ if (( $(ver ${TARGET_VERSION}) >= $(ver "2.0.0") )); then
     chmod +x "${INSTALL_DIR}/docker-compose-v2"
     echo '#!/bin/bash' > "${COMPOSE_BIN}"
     echo "exec \"${INSTALL_DIR}/docker-compose-v2\" compose \"\${@}\"" >> "${COMPOSE_BIN}"
-    echo "${COMPOSE_BIN}"
-    cat "${COMPOSE_BIN}"
-    [[ ! -z "$GITHUB_ENV" ]] && (echo "PATH=${INSTALL_DIR}:${PATH}" >> $GITHUB_ENV)
     chmod +x "${COMPOSE_BIN}"
     echo "Installed docker-compose v2"
 else
