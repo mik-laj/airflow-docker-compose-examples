@@ -35,7 +35,7 @@ if (( $(ver ${TARGET_VERSION}) >= $(ver "2.0.0") )); then
     curl -fsSL "https://github.com/docker/compose-cli/releases/download/v2.0.0-beta.4/docker-compose-linux-amd64" -o "${INSTALL_DIR}/docker-compose-v2"
     chmod +x "${INSTALL_DIR}/docker-compose-v2"
     echo '#!/bin/bash' > "${COMPOSE_BIN}"
-    echo "exec \"${INSTALL_DIR}/docker-compose-v2\" compose \"\${@}\"" > "${COMPOSE_BIN}"
+    echo "exec \"${INSTALL_DIR}/docker-compose-v2\" compose \"\${@}\"" >> "${COMPOSE_BIN}"
     echo "${COMPOSE_BIN}"
     cat "${COMPOSE_BIN}"
     [[ ! -z "$GITHUB_ENV" ]] && (echo "PATH=${INSTALL_DIR}:${PATH}" >> $GITHUB_ENV)
