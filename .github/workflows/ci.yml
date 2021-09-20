@@ -21,12 +21,8 @@ jobs:
 #          - 1.29.1
           - 1.29.0
 #          - 2
-        airflow_version:
-#          - 2.1.0
-          - 2.1.2
-#          - master
     concurrency:
-      group: ${{ github.event.pull_request.number || github.ref }}-${{ matrix.os }}-${{ matrix.compose_version }}-${{ matrix.airflow_version }}
+      group: ${{ github.event.pull_request.number || github.ref }}-${{ matrix.os }}-${{ matrix.compose_version }}
       cancel-in-progress: true
     runs-on: ${{ matrix.os }}
     steps:
@@ -55,16 +51,6 @@ jobs:
           export PATH="${TMP_DIR}:${PATH}"
           echo "PATH=${PATH}" >> $GITHUB_ENV
           echo "Installed docker-compose v2"
-      - if: matrix.airflow_version != 'master'
-        env:
-          AIRFLOW_IMAGE_NAME: 'apache/airflow:${{ matrix.airflow_version }}'
-        run: |
-          echo "AIRFLOW_IMAGE_NAME=${AIRFLOW_IMAGE_NAME}" >> $GITHUB_ENV
-      - if: matrix.airflow_version == 'master'
-        env:
-          AIRFLOW_IMAGE_NAME: 'apache/airflow-ci:main-python3.8'
-        run: |
-          echo "AIRFLOW_IMAGE_NAME=${AIRFLOW_IMAGE_NAME}" >> $GITHUB_ENV
       - uses: actions/setup-python@v2
         with:
           python-version: '3.8'
@@ -76,4 +62,4 @@ jobs:
             ${{ runner.os }}-pip-
       - uses: pre-commit/action@v2.0.3
       - run: pip install -r requirements.txt
-      - run: pytest tests/ -vvvv -s --color=yes
+      - run: pytest tests/ --color=yes
