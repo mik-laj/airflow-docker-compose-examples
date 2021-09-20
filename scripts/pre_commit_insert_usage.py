@@ -18,6 +18,7 @@ help_output = subprocess.check_output(['./render.py', '--help'], timeout=5).deco
 readme_content = README_FILE.read_text()
 new_content = re.sub(
     f"{re.escape(MARKER_START)}\n.+?{re.escape(MARKER_END)}", f"{MARKER_START}\n```\n{help_output}\n```\n{MARKER_END}\n", readme_content, flags=re.MULTILINE| re.DOTALL)
+new_content = new_content.strip() + "\n"
 
 if readme_content != new_content:
     with open(README_FILE, "w") as readme_file_handle:

@@ -63,6 +63,3 @@ optional arguments:
 
 ```
 <!-- USAGE_END -->
-
-
-
