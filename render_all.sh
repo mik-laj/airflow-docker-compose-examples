@@ -22,7 +22,7 @@ PROJECT_SOURCES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 cd "${PROJECT_SOURCES}"
 
-AIRFLOW_VERSION="$(cat requirements-airflow.txt | grep apache-airflow | cut -d "=" -f 3)"
+AIRFLOW_VERSION="$(grep apache-airflow requirements-airflow.txt | cut -d "=" -f 3)"
 
 mkdir -p compose-files/celery-executor--postgres
 ./render.py --executor=CeleryExecutor \

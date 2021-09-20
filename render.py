@@ -30,7 +30,10 @@ def render_jinja_template(template_name: str, **kwargs) -> str:
     """Render Jinja template"""
     template_loader = jinja2.FileSystemLoader(searchpath=TEMPLATE_DIR)
     template_env = jinja2.Environment(
-        loader=template_loader, undefined=jinja2.StrictUndefined, lstrip_blocks=True, trim_blocks=True,
+        loader=template_loader,
+        undefined=jinja2.StrictUndefined,
+        lstrip_blocks=True,
+        trim_blocks=True,
     )
     template: jinja2.Template = template_env.get_template(template_name)
     content: str = template.render(**kwargs, fail=fail)
@@ -45,17 +48,12 @@ def validate_docker_compose(text_content: str) -> None:
     jsonschema.validate(content, schema)
 
 
-def render_docker_compose(
-    *,
-    airflow_version: str,
-    executor: str,
-    db_backend: str
-) -> str:
+def render_docker_compose(*, airflow_version: str, executor: str, db_backend: str) -> str:
     text_content = render_jinja_template(
         'docker-compose.yaml.jinja2',
         airflow_version=airflow_version,
         executor=executor,
-        db_backend=db_backend
+        db_backend=db_backend,
     )
     try:
         validate_docker_compose(text_content)
@@ -80,14 +78,16 @@ def main() -> None:
     parser = get_parser()
     args = parser.parse_args()
     if args.airflow_version < semver.VersionInfo.parse("2.1.0"):
-        print(f"Unsupported Airflow version [{args.airflow_version}]. At least version 2.1.0 is required.", file=sys.stderr)
+        print(
+            f"Unsupported Airflow version [{args.airflow_version}]. At least version 2.1.0 is required.",
+            file=sys.stderr,
+        )
         sys.exit(1)
     print(
         render_docker_compose(
-            airflow_version=str(args.airflow_version),
-            executor=args.executor,
-            db_backend=args.db_backend
+            airflow_version=str(args.airflow_version), executor=args.executor, db_backend=args.db_backend
         )
     )
+
 
 main()

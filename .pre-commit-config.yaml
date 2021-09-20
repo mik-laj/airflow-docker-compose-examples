@@ -21,10 +21,94 @@ repos:
         name: Insert Usage help in README.md
         language: python
         entry: ./scripts/pre_commit_insert_usage.py
-        files: '^README.md|redner\.py$'
+        files: '^README\.md|redner\.py$'
         additional_dependencies:
           - httpx
           - jsonschema
           - PyYAML
           - semver
           - jinja2
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.1.10
+    hooks:
+      - id: forbid-tabs
+  - repo: https://github.com/psf/black
+    rev: 21.8b0
+    hooks:
+      - id: black
+        args: [--config=./pyproject.toml]
+  - repo: https://github.com/thlorenz/doctoc.git
+    rev: v2.0.1
+    hooks:
+      - id: doctoc
+        name: Add TOC for md files
+        files:
+          ^README\.md$
+        args:
+          - "--maxlevel"
+          - "2"
+          - "--title"
+          - "**Table of Contents**"
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: check-builtin-literals
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+      - id: check-executables-have-shebangs
+      - id: trailing-whitespace
+      - id: fix-encoding-pragma
+        args:
+          - --remove
+      - id: pretty-format-json
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v2.25.1
+    hooks:
+      - id: pyupgrade
+        args: ["--py36-plus"]
+        exclude: ^airflow/_vendor/
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.26.3
+    hooks:
+      - id: yamllint
+        name: Check YAML files with yamllint
+        entry: yamllint -c yamllint-config.yml --strict
+        types: [yaml]
+  - repo: https://github.com/timothycrosley/isort
+    rev: 5.9.3
+    hooks:
+      - id: isort
+        name: Run isort to sort imports in Python files
+        files: \.py$
+  - repo: https://github.com/asottile/yesqa
+    rev: v1.2.3
+    hooks:
+      - id: yesqa
+        exclude: |
+          (?x)
+          ^airflow/_vendor/
+  - repo: https://github.com/ikamensh/flynt
+    rev: '0.69'
+    hooks:
+      - id: flynt
+        exclude: |
+          (?x)
+          ^airflow/_vendor/
+  - repo: local
+    hooks:
+      - id: markdownlint
+        name: Run markdownlint
+        description: Checks the style of Markdown files.
+        entry: markdownlint
+        language: node
+        types: [markdown]
+        files: \.(md|mdown|markdown)$
+        additional_dependencies: ['markdownlint-cli']
+      - id: shellcheck
+        name: Check Shell scripts syntax correctness
+        language: docker_image
+        entry: koalaman/shellcheck:v0.7.2 -x -a
+        files: \.sh$

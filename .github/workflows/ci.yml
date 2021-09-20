@@ -1,10 +1,11 @@
+---
 name: CI
 
-on:
+on:  # yamllint disable-line rule:truthy
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
   workflow_dispatch:
 
@@ -23,7 +24,11 @@ jobs:
         airflow_version:
           - current
     concurrency:
-      group: ${{ github.event.pull_request.number || github.ref }}-${{ matrix.os }}-${{ matrix.compose_version }}-${{ matrix.airflow_version }}
+      group: >-
+        ${{ github.event.pull_request.number || github.ref }}
+        ${{ matrix.os }}
+        ${{ matrix.compose_version }}
+        ${{ matrix.airflow_version }}
       cancel-in-progress: true
     runs-on: ${{ matrix.os }}
     steps:

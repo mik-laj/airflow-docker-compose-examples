@@ -74,7 +74,9 @@ services:
     volumes:
       - mysql-db-volume:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", 'mysql -h localhost -P 3306 -u root --password="$${MYSQL_ROOT_PASSWORD}" -e "SELECT 1"']
+      test: [
+        "CMD-SHELL", 'mysql -h localhost -P 3306 -u root --password="$${MYSQL_ROOT_PASSWORD}" -e "SELECT 1"'
+      ]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -135,4 +137,3 @@ services:
 
 volumes:
   mysql-db-volume:
-

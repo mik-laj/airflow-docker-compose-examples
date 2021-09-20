@@ -12,7 +12,7 @@ function ver() {
 if command -v docker-compose &>/dev/null; then
     COMPOSE_BIN="$(command -v docker-compose)"
 else
-    COMPOSE_BIN="$(echo $PATH | cut -d ":" -f 1)/docker-compose"
+    COMPOSE_BIN="$(echo "$PATH" | cut -d ":" -f 1)/docker-compose"
 fi
 
 echo "COMPOSE_BIN=${COMPOSE_BIN}"
@@ -21,14 +21,14 @@ echo "COMPOSE_BIN=${COMPOSE_BIN}"
 
 TARGET_VERSION=${1}
 
-(( $(ver ${TARGET_VERSION}) <= $(ver "1.0.0") )) && (echo "Unsupported version. Supported version - [1.0.0-2.0.0]"; exit 1)
-(( $(ver ${TARGET_VERSION}) > $(ver "2.0.0")  )) && (echo "Unsupported version. Supported version - [1.0.0-2.0.0]"; exit 1)
+(( $(ver "${TARGET_VERSION}") <= $(ver "1.0.0") )) && (echo "Unsupported version. Supported version - [1.0.0-2.0.0]"; exit 1)
+(( $(ver "${TARGET_VERSION}") > $(ver "2.0.0")  )) && (echo "Unsupported version. Supported version - [1.0.0-2.0.0]"; exit 1)
 
 if [[ -f "${COMPOSE_BIN}" ]]; then
     echo "Found existing docker-compose. Uninstalling."
     sudo rm -rf "${COMPOSE_BIN}"
 fi
-if (( $(ver ${TARGET_VERSION}) >= $(ver "2.0.0") )); then
+if (( $(ver "${TARGET_VERSION}") >= $(ver "2.0.0") )); then
     echo "Install docker-compose v2: ${TARGET_VERSION}"
     INSTALL_DIR="/opt/docker-compose-v2"
     mkdir -p "${INSTALL_DIR}"
