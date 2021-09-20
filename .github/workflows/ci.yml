@@ -22,7 +22,7 @@ jobs:
           - 1.29.0
 #          - 2
         airflow_version:
-          - 2.1.0
+#          - 2.1.0
           - 2.1.4
 #          - master
     concurrency:
