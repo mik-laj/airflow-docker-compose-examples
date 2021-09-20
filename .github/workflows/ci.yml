@@ -63,7 +63,7 @@ jobs:
           echo "AIRFLOW_IMAGE_NAME=${AIRFLOW_IMAGE_NAME}" >> $GITHUB_ENV
       - if: matrix.airflow_version == 'master'
         env:
-          AIRFLOW_IMAGE_NAME: 'apache/airflow-ci:main-python3.8'
+          AIRFLOW_IMAGE_NAME: 'ghcr.io/apache/airflow/main/prod-build/python3.9:latest'
         run: |
           echo "AIRFLOW_IMAGE_NAME=${AIRFLOW_IMAGE_NAME}" >> $GITHUB_ENV
       - uses: actions/setup-python@v2
