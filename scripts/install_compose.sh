@@ -46,3 +46,5 @@ else
     chmod +x docker-compose
     sudo mv docker-compose "${COMPOSE_BIN}"
 fi
+
+docker-compose -v || docker-compose version || docker-compose
