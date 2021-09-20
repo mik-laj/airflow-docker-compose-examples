@@ -4,6 +4,16 @@ Configuring Docker-Compose deployments requires in-house knowledge of Docker Com
 
 All pre-generated examples are automatically tested on CI to verify their correctness.
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Before you begin](#before-you-begin)
+- [Available examples](#available-examples)
+- [Generate your `docker-compose.yaml` file](#generate-your-docker-composeyaml-file)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Before you begin
 
 If you want to start using Apache Airflow, you should read the guide: [Gettings started Apache Airflow with Docker](http://airflow.apache.org/docs/apache-airflow/stable/start/docker.html).
