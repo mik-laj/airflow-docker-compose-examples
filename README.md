@@ -56,7 +56,7 @@ curl -sSLO https://raw.githubusercontent.com/mik-laj/airflow-docker-compose-exam
 
 ## Generate your `docker-compose.yaml` file
 
-All examples in this repository generated from one Jinja2 template - [`./docker-compose.yaml.jinja2`](./docker-compose.yaml.jinja2). If you need to generate an example in a less typical configuration, you can do so with the [`./redener.py`](./render.py) script.
+All examples in this repository generated from one Jinja2 template - [`./docker-compose.yaml.jinja2`](./docker-compose.yaml.jinja2). If you need to generate an example in a less typical configuration, you can do so with the [`./render.py`](./render.py) script.
 
 <!-- USAGE_START -->
 ```
