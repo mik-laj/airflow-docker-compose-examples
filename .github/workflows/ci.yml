@@ -37,7 +37,7 @@ jobs:
         env:
           COMPOSE_VERSION: ${{ matrix.compose_version }}
         run: |
-          ./scripts/install_compose.sh "${COMPOSE_VERSION}"
+          bash -x ./scripts/install_compose.sh "${COMPOSE_VERSION}"
       - if: matrix.airflow_version == 'master'
         env:
           AIRFLOW_IMAGE_NAME: 'apache/airflow-ci:main-python3.8'
