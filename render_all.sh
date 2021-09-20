@@ -22,7 +22,7 @@ PROJECT_SOURCES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 cd "${PROJECT_SOURCES}"
 
-AIRFLOW_VERSION=2.1.4
+AIRFLOW_VERSION=2.1.2
 mkdir -p compose-files/celery-executor--postgres
 ./render.py --executor=CeleryExecutor \
     --airflow-version "${AIRFLOW_VERSION}" \
