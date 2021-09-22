@@ -84,7 +84,7 @@ x-airflow-common:
 {% elif db_backend == 'mysql' %}
     AIRFLOW__CELERY__RESULT_BACKEND: db+mysql://root:airflow@mysql/airflow?charset=utf8mb4
 {% elif db_backend == 'mssql' %}
-    AIRFLOW__CELERY__RESULT_BACKEND: "db+mssql+pyodbc://sa:airflow@mssql:1433/airflow?\
+    AIRFLOW__CELERY__RESULT_BACKEND: "db+mssql+pyodbc://sa:Airflow123@mssql:1433/airflow?\
       driver=ODBC+Driver+17+for+SQL+Server"
 {% else %}
     {{ fail("Unsupported baackend:  " + db_backend) }}
