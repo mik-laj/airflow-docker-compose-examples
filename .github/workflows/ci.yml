@@ -34,7 +34,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - if: matrix.compose_version == '2.0.0' || matrix.compose_version == 'latest' 
+      - if: matrix.compose_version == '2.0.0' || matrix.compose_version == 'latest'
         name: "Update Docker CLI"
         run: |
           sudo rm "$(command -v docker)";
