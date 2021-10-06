@@ -20,19 +20,25 @@ echo "COMPOSE_BIN=${COMPOSE_BIN}"
 [[ $# -ne 1 ]] && (echo "Missing required argument - VERSION."; exit 1)
 
 TARGET_VERSION=${1}
-
-(( $(ver "${TARGET_VERSION}") <= $(ver "1.0.0") )) && (echo "Unsupported version. Supported version - [1.0.0-2.0.0]"; exit 1)
-(( $(ver "${TARGET_VERSION}") > $(ver "2.0.0")  )) && (echo "Unsupported version. Supported version - [1.0.0-2.0.0]"; exit 1)
+if [[ "${TARGET_VERSION}" != "latest" ]]; then
+  (( $(ver "${TARGET_VERSION}") <= $(ver "1.0.0") )) && (echo "Unsupported version. Supported version - [1.0.0-2.0.0]"; exit 1)
+  (( $(ver "${TARGET_VERSION}") > $(ver "2.0.0")  )) && (echo "Unsupported version. Supported version - [1.0.0-2.0.0]"; exit 1)
+fi
 
 if [[ -f "${COMPOSE_BIN}" ]]; then
     echo "Found existing docker-compose. Uninstalling."
     sudo rm -rf "${COMPOSE_BIN}"
 fi
-if (( $(ver "${TARGET_VERSION}") >= $(ver "2.0.0") )); then
+if [[ "${TARGET_VERSION}" == "latest" ]]; then
+    URL=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r '.assets[].browser_download_url | select(endswith("docker-compose-linux-x86_64"))')
+    curl --fail -L "$URL" -o docker-compose
+    chmod +x docker-compose
+    sudo mv docker-compose "${COMPOSE_BIN}"
+elif (( $(ver "${TARGET_VERSION}") >= $(ver "2.0.0") )); then
     echo "Install docker-compose v2: ${TARGET_VERSION}"
     INSTALL_DIR="/opt/docker-compose-v2"
     mkdir -p "${INSTALL_DIR}"
-    curl -fsSL "https://github.com/docker/compose-cli/releases/download/v2.0.0-beta.4/docker-compose-linux-amd64" -o "${INSTALL_DIR}/docker-compose-v2"
+    curl --fail -L "https://github.com/docker/compose-cli/releases/download/v2.0.0-beta.4/docker-compose-linux-amd64" -o "${INSTALL_DIR}/docker-compose-v2"
     chmod +x "${INSTALL_DIR}/docker-compose-v2"
     echo '#!/bin/bash' > "${COMPOSE_BIN}"
     echo "exec \"${INSTALL_DIR}/docker-compose-v2\" compose \"\${@}\"" >> "${COMPOSE_BIN}"
