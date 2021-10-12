@@ -15,6 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
+{% set airflow_image_name = "apache/airflo:" + airflow_version + "-python3.8" %}
 
 {% if executor == "CeleryExecutor" %}
 # Basic Airflow cluster configuration for CeleryExecutor with Redis and {% if db_backend == 'postgres' %}PostgreSQL{% else %}MySQL{% endif %}.
@@ -30,7 +31,7 @@
 # The following variables are supported:
 #
 # AIRFLOW_IMAGE_NAME         - Docker image name used to run Airflow.
-#                              Default: apache/airflow:{{ airflow_version }}-python3.8
+#                              Default: {{ airflow_image_name }}
 # AIRFLOW_UID                - User ID in Airflow containers
 #                              Default: 50000
 # AIRFLOW_GID                - Group ID in Airflow containers
@@ -44,7 +45,7 @@
 ---
 x-airflow-common:
   &airflow-common
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:{{ airflow_version }}}
+  image: ${AIRFLOW_IMAGE_NAME:-{{ airflow_image_name }}}
   environment:
     &airflow-common-env
 {% if executor == "CeleryExecutor" %}
