@@ -26,6 +26,10 @@ def fail(message: str):
     raise Exception(message)
 
 
+def semver_compare(left: str, right: str):
+    return semver.VersionInfo.parse(left).compare(right)
+
+
 def render_jinja_template(template_name: str, **kwargs) -> str:
     """Render Jinja template"""
     template_loader = jinja2.FileSystemLoader(searchpath=TEMPLATE_DIR)
@@ -36,7 +40,7 @@ def render_jinja_template(template_name: str, **kwargs) -> str:
         trim_blocks=True,
     )
     template: jinja2.Template = template_env.get_template(template_name)
-    content: str = template.render(**kwargs, fail=fail)
+    content: str = template.render(**kwargs, fail=fail, semver_compare=semver_compare)
     return content
 
 

@@ -196,6 +196,22 @@ services:
         condition: service_completed_successfully
 
 {% endif %}
+{% if semver_compare(airflow_version, "2.2.0") >= 0  %}
+  airflow-triggerer:
+    <<: *airflow-common
+    command: triggerer
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+{% endif %}
   airflow-init:
     <<: *airflow-common
     command: version
