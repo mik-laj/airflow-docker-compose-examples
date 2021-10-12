@@ -11,6 +11,7 @@ on:  # yamllint disable-line rule:truthy
 
 jobs:
   build:
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
