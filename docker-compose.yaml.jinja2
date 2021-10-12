@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-{% set airflow_image_name = "apache/airflo:" + airflow_version + "-python3.8" %}
+{% set airflow_image_name = "apache/airflow:" + airflow_version + "-python3.8" %}
 
 {% if executor == "CeleryExecutor" %}
 # Basic Airflow cluster configuration for CeleryExecutor with Redis and {% if db_backend == 'postgres' %}PostgreSQL{% else %}MySQL{% endif %}.
