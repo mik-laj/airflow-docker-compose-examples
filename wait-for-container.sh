@@ -3,10 +3,9 @@
 set -euo pipefail
 
 timeout=300
-
-function usage() {
 CMDNAME="$(basename -- "$0")"
 
+function usage() {
   cat << EOF
 Usage: ${CMDNAME} <container_id>
 
