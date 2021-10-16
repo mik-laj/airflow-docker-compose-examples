@@ -116,11 +116,11 @@ function wait_for_container {
             waiting_done="true"
         fi
         current_timestamp=$(date +%s)
-        if [[ "${timeout}" != "0" ]]; then 
+        if [[ "${timeout}" != "0" ]]; then
             if [[ "$(( current_timestamp - start_timestamp ))" -gt "${timeout}" ]]; then
                 ecoh "Timeout. The operation takes longer than the maximum waiting time (${timeout}s)"
                 exit 1
-            fi 
+            fi
         fi
         sleep 1;
     done;
