@@ -61,4 +61,4 @@ jobs:
             ${{ runner.os }}-pip-
       - uses: pre-commit/action@v2.0.3
       - run: pip install -r requirements.txt
-      - run: pytest tests/ --color=yes
+      - run: pytest tests/ --color=yes -vvv -s
