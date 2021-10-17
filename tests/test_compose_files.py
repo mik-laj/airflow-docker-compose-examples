@@ -86,25 +86,28 @@ def test_valid_components(compose_file):
         run_cmd(["docker-compose", "config"])
         run_cmd(["docker-compose", "down", "--volumes", "--remove-orphans"])
         try:
-            run_cmd(["docker-compose", "up", "-d"])
-            # Wait until all containers are healthy. Unfortunately, docker-compose does not have such
-            # a built-in command yet. It only has the ability to wait for containers that have dependencies,
-            # but the last last containers remain without health control on startup.
-            run_cmd(
-                f"docker-compose ps -q | xargs -n 1 -P 8 -r {orig_cwd}/wait-for-container.sh", shell=True
-            )
-            api_request("PATCH", path=f"dags/{DAG_ID}", json={"is_paused": False})
-            api_request("POST", path=f"dags/{DAG_ID}/dagRuns", json={"dag_run_id": DAG_RUN_ID})
-            try:
-                wait_for_dag_state(dag_id=DAG_ID, dag_run_id=DAG_RUN_ID)
-                dag_state = api_request("GET", f"dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}").get("state")
-                assert dag_state == "success"
-            except:
-                print(f"HTTP: GET dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}")
-                pprint(api_request("GET", f"dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}"))
-                print(f"HTTP: GET dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}/taskInstances")
-                pprint(api_request("GET", f"dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}/taskInstances"))
-                raise
+            with subprocess.Popen(["docker-compose", "events"]) as p_events:
+                try:
+                    run_cmd(["docker-compose", "up", "-d"])
+                    # Wait until all containers are healthy. Unfortunately, docker-compose does not have such
+                    # a built-in command yet. It only has the ability to wait for containers that have dependencies,
+                    # but the last last containers remain without health control on startup.
+                    run_cmd(
+                        f"docker-compose ps -q | xargs -n 1 -P 8 -r {orig_cwd}/wait-for-container.sh", shell=True
+                    )
+                    api_request("PATCH", path=f"dags/{DAG_ID}", json={"is_paused": False})
+                    api_request("POST", path=f"dags/{DAG_ID}/dagRuns", json={"dag_run_id": DAG_RUN_ID})
+                    wait_for_dag_state(dag_id=DAG_ID, dag_run_id=DAG_RUN_ID)
+                    dag_state = api_request("GET", f"dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}").get("state")
+                    assert dag_state == "success"
+                except:
+                    print(f"HTTP: GET dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}")
+                    pprint(api_request("GET", f"dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}"))
+                    print(f"HTTP: GET dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}/taskInstances")
+                    pprint(api_request("GET", f"dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}/taskInstances"))
+                    p_events.terminate()
+                    p_events.communicate()
+                    raise
         except:
             run_cmd(["docker-compose", "ps"])
             run_cmd(["docker-compose", "logs", "airflow-triggerer"])
