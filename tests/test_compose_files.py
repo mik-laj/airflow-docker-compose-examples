@@ -15,7 +15,7 @@ import pytest
 
 COMPOSE_FILES_DIR = p = Path(__file__).resolve().parent.parent / "compose-files"
 COMPOSE_FILES = list(p.glob("**/docker-compose.yaml"))
-COMPOSE_FILES = [d for d in COMPOSE_FILES if 'celery' in d and 'postgres']
+COMPOSE_FILES = [d for d in COMPOSE_FILES if 'celery' in str(d) and 'postgres' in str(d)]
 
 AIRFLOW_WWW_USER_USERNAME = os.environ.get("_AIRFLOW_WWW_USER_USERNAME", "airflow")
 AIRFLOW_WWW_USER_PASSWORD = os.environ.get("_AIRFLOW_WWW_USER_PASSWORD", "airflow")
