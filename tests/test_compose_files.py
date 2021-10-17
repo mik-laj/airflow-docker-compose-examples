@@ -71,9 +71,9 @@ def run_cmd(args, **kwargs):
 @pytest.mark.parametrize("compose_file", COMPOSE_FILES)
 def test_valid_components(compose_file):
     with tempfile.TemporaryDirectory() as tmp_dir, tmp_chdir(tmp_dir) as orig_cwd:
-        os.mkdir("{tmp_dir}/dags")
-        os.mkdir("{tmp_dir}/logs")
-        os.mkdir("{tmp_dir}/plugins")
+        os.mkdir(f"{tmp_dir}/dags")
+        os.mkdir(f"{tmp_dir}/logs")
+        os.mkdir(f"{tmp_dir}/plugins")
         with open(".env", "w+") as env_file:
             uid = subprocess.check_output(["id", "-u"]).decode()
             env_file.write(f"AIRFLOW_UID={uid}\n")
