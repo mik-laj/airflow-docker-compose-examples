@@ -4,6 +4,7 @@ import shlex
 import subprocess
 import tempfile
 import urllib
+from contextlib import ExitStack
 from pathlib import Path
 from pprint import pprint
 from shutil import copyfile
@@ -86,7 +87,9 @@ def test_valid_components(compose_file):
         run_cmd(["docker-compose", "config"])
         run_cmd(["docker-compose", "down", "--volumes", "--remove-orphans"])
         try:
-            with subprocess.Popen(["docker-compose", "events"]) as p_events:
+            p_events = None
+            with ExitStack() as exit_stack:
+                # p_events = exit_stack..enter_context(subprocess.Popen(["docker-compose", "events"]));
                 try:
                     run_cmd(["docker-compose", "up", "-d"])
                     # Wait until all containers are healthy. Unfortunately, docker-compose does not have such
@@ -105,8 +108,9 @@ def test_valid_components(compose_file):
                     pprint(api_request("GET", f"dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}"))
                     print(f"HTTP: GET dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}/taskInstances")
                     pprint(api_request("GET", f"dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}/taskInstances"))
-                    p_events.terminate()
-                    p_events.communicate()
+                    if p_events:
+                        p_events.terminate()
+                        p_events.communicate()
                     raise
         except:
             run_cmd(["docker-compose", "ps"])
