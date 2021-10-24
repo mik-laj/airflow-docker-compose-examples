@@ -4,7 +4,6 @@ import shlex
 import subprocess
 import tempfile
 import urllib
-from contextlib import ExitStack
 from pathlib import Path
 from pprint import pprint
 from shutil import copyfile
@@ -93,9 +92,9 @@ def test_valid_components(compose_file):
             run_cmd(
                 f"docker-compose ps -q | xargs -n 1 -P 8 -r {orig_cwd}/wait-for-container.sh", shell=True
             )
+            api_request("PATCH", path=f"dags/{DAG_ID}", json={"is_paused": False})
+            api_request("POST", path=f"dags/{DAG_ID}/dagRuns", json={"dag_run_id": DAG_RUN_ID})
             try:
-                api_request("PATCH", path=f"dags/{DAG_ID}", json={"is_paused": False})
-                api_request("POST", path=f"dags/{DAG_ID}/dagRuns", json={"dag_run_id": DAG_RUN_ID})
                 wait_for_dag_state(dag_id=DAG_ID, dag_run_id=DAG_RUN_ID)
                 dag_state = api_request("GET", f"dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}").get("state")
                 assert dag_state == "success"
