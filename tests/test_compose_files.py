@@ -76,7 +76,6 @@ def test_valid_components(compose_file):
         with open(".env", "w+") as env_file:
             uid = subprocess.check_output(["id", "-u"]).decode()
             env_file.write(f"AIRFLOW_UID={uid}\n")
-        run_cmd("find . -type d | xargs -n 1 -t ls -lah", shell=True)
         copyfile(compose_file, f"{tmp_dir}/docker-compose.yaml")
         run_cmd(
             "curl -s 'https://raw.githubusercontent.com/apache/airflow/master/airflow/example_dags/example_bash_operator.py' -o dags/example_bash_operator.py",
