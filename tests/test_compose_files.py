@@ -98,6 +98,8 @@ def test_valid_components(compose_file):
                     run_cmd(
                         f"docker-compose ps -q | xargs -n 1 -P 8 -r {orig_cwd}/wait-for-container.sh", shell=True
                     )
+                    run_cmd(f'docker-compose ps -a')
+                    run_cmd(f'docker ps')
                     api_request("PATCH", path=f"dags/{DAG_ID}", json={"is_paused": False})
                     api_request("POST", path=f"dags/{DAG_ID}/dagRuns", json={"dag_run_id": DAG_RUN_ID})
                     wait_for_dag_state(dag_id=DAG_ID, dag_run_id=DAG_RUN_ID)
