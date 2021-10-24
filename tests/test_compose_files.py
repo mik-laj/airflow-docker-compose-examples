@@ -16,7 +16,6 @@ import pytest
 
 COMPOSE_FILES_DIR = p = Path(__file__).resolve().parent.parent / "compose-files"
 COMPOSE_FILES = list(p.glob("**/docker-compose.yaml"))
-COMPOSE_FILES = [d for d in COMPOSE_FILES if 'celery' in str(d) and 'postgres' in str(d)]
 
 AIRFLOW_WWW_USER_USERNAME = os.environ.get("_AIRFLOW_WWW_USER_USERNAME", "airflow")
 AIRFLOW_WWW_USER_PASSWORD = os.environ.get("_AIRFLOW_WWW_USER_PASSWORD", "airflow")
@@ -88,35 +87,28 @@ def test_valid_components(compose_file):
         run_cmd(["docker-compose", "down", "--volumes", "--remove-orphans"])
         try:
             p_events = None
-            with ExitStack() as exit_stack:
-                # p_events = exit_stack..enter_context(subprocess.Popen(["docker-compose", "events"]));
-                try:
-                    run_cmd(["docker-compose", "up", "-d"])
-                    # Wait until all containers are healthy. Unfortunately, docker-compose does not have such
-                    # a built-in command yet. It only has the ability to wait for containers that have dependencies,
-                    # but the last last containers remain without health control on startup.
-                    run_cmd(
-                        f"docker-compose ps -q | xargs -n 1 -P 8 -r {orig_cwd}/wait-for-container.sh", shell=True
-                    )
-                    run_cmd(['docker-compose', 'ps', '-a'])
-                    run_cmd(['docker', 'ps'])
-                    api_request("PATCH", path=f"dags/{DAG_ID}", json={"is_paused": False})
-                    api_request("POST", path=f"dags/{DAG_ID}/dagRuns", json={"dag_run_id": DAG_RUN_ID})
-                    wait_for_dag_state(dag_id=DAG_ID, dag_run_id=DAG_RUN_ID)
-                    dag_state = api_request("GET", f"dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}").get("state")
-                    assert dag_state == "success"
-                except:
-                    print(f"HTTP: GET dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}")
-                    pprint(api_request("GET", f"dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}"))
-                    print(f"HTTP: GET dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}/taskInstances")
-                    pprint(api_request("GET", f"dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}/taskInstances"))
-                    if p_events:
-                        p_events.terminate()
-                        p_events.communicate()
-                    raise
+            try:
+                run_cmd(["docker-compose", "up", "-d"])
+                # Wait until all containers are healthy. Unfortunately, docker-compose does not have such
+                # a built-in command yet. It only has the ability to wait for containers that have dependencies,
+                # but the last last containers remain without health control on startup.
+                run_cmd(
+                    f"docker-compose ps -q | xargs -n 1 -P 8 -r {orig_cwd}/wait-for-container.sh", shell=True
+                )
+                api_request("PATCH", path=f"dags/{DAG_ID}", json={"is_paused": False})
+                api_request("POST", path=f"dags/{DAG_ID}/dagRuns", json={"dag_run_id": DAG_RUN_ID})
+                wait_for_dag_state(dag_id=DAG_ID, dag_run_id=DAG_RUN_ID)
+                dag_state = api_request("GET", f"dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}").get("state")
+                assert dag_state == "success"
+            except:
+                print(f"HTTP: GET dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}")
+                pprint(api_request("GET", f"dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}"))
+                print(f"HTTP: GET dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}/taskInstances")
+                pprint(api_request("GET", f"dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}/taskInstances"))
+                raise
         except:
-            run_cmd(["docker-compose", "ps"])
-            run_cmd(["docker-compose", "logs", "airflow-triggerer"])
+            run_cmd(["docker", "ps"])
+            run_cmd(["docker-compose", "logs"])
             raise
         finally:
             run_cmd(["docker-compose", "down", "--volumes"])
