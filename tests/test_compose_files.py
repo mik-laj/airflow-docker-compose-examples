@@ -24,7 +24,7 @@ DAG_ID = "example_bash_operator"
 DAG_RUN_ID = "test_dag_run_id"
 
 
-def api_request(method, path, base_url="http://localhost:8080/api/v1/", **kwargs) -> Dict:
+def api_request(method, path, base_url="http://localhost:8080/api/v1", **kwargs) -> Dict:
     response = httpx.request(
         method=method,
         url=f"{base_url}/{path}",
