@@ -105,7 +105,11 @@ function wait_for_container {
     while [[ "${waiting_done}" != "true" ]]; do
         container_state="$(docker inspect "${container_id}" --format '{{ .State.Status }}')"
         if [[ "${container_state}" == "running" ]]; then
-            health_status="$(docker inspect "${container_id}" --format '{{ .State.Health.Status }}')"
+            health_status="$(\
+                docker inspect \
+                    "${container_id}" \
+                    --format '{{ if .State.Health }}{{ .State.Health.Status }}{{ else }}No-check{{ end }}' \
+            )"
             echo "${container_name}: container_state=${container_state}, health_status=${health_status}"
             if [[ ${health_status} == "healthy" ]]; then
                 waiting_done="true"
