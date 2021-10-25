@@ -24,6 +24,7 @@ jobs:
           - 2.0.0
         airflow_version:
           - current
+          - main
     concurrency:
       group: >-
         ${{ github.event.pull_request.number || github.ref }}
@@ -44,9 +45,9 @@ jobs:
           COMPOSE_VERSION: ${{ matrix.compose_version }}
         run: |
           ./scripts/install_compose.sh "${COMPOSE_VERSION}"
-      - if: matrix.airflow_version == 'master'
+      - if: matrix.airflow_version == 'main'
         env:
-          AIRFLOW_IMAGE_NAME: 'apache/airflow-ci:main-python3.8'
+          AIRFLOW_IMAGE_NAME: 'ghcr.io/apache/airflow/main/prod/python3.7:latest'
         run: |
           echo "AIRFLOW_IMAGE_NAME=${AIRFLOW_IMAGE_NAME}" >> $GITHUB_ENV
       - uses: actions/setup-python@v2
