@@ -2,13 +2,6 @@
 
 set -euo pipefail
 
-function ver() {
-  # convert SemVer number to comparable string (strips pre-release version)
-  # shellcheck disable=SC2086,SC2183
-  printf "%04d%04d%04d%.0s" ${1//[.-]/ }
-}
-
-
 if command -v docker-compose &>/dev/null; then
     COMPOSE_BIN="$(command -v docker-compose)"
 else
@@ -20,10 +13,6 @@ echo "COMPOSE_BIN=${COMPOSE_BIN}"
 [[ $# -ne 1 ]] && (echo "Missing required argument - VERSION."; exit 1)
 
 TARGET_VERSION=${1}
-if [[ "${TARGET_VERSION}" != "latest" ]]; then
-  (( $(ver "${TARGET_VERSION}") <= $(ver "1.0.0") )) && (echo "Unsupported version. Supported version - [1.0.0-2.0.0]"; exit 1)
-  (( $(ver "${TARGET_VERSION}") > $(ver "2.0.0")  )) && (echo "Unsupported version. Supported version - [1.0.0-2.0.0]"; exit 1)
-fi
 
 if [[ -f "${COMPOSE_BIN}" ]]; then
     echo "Found existing docker-compose. Uninstalling."
@@ -34,21 +23,25 @@ if [[ "${TARGET_VERSION}" == "latest" ]]; then
     curl --fail -L "$URL" -o docker-compose
     chmod +x docker-compose
     sudo mv docker-compose "${COMPOSE_BIN}"
-elif (( $(ver "${TARGET_VERSION}") >= $(ver "2.0.0") )); then
+    echo "Installed docker-compose v2 (latest)"
+elif [["${TARGET_VERSION}" = 2.* ]]; then
     echo "Install docker-compose v2: ${TARGET_VERSION}"
-    INSTALL_DIR="/opt/docker-compose-v2"
-    mkdir -p "${INSTALL_DIR}"
-    curl --fail -L "https://github.com/docker/compose-cli/releases/download/v2.0.0-beta.4/docker-compose-linux-amd64" -o "${INSTALL_DIR}/docker-compose-v2"
-    chmod +x "${INSTALL_DIR}/docker-compose-v2"
-    echo '#!/bin/bash' > "${COMPOSE_BIN}"
-    echo "exec \"${INSTALL_DIR}/docker-compose-v2\" compose \"\${@}\"" >> "${COMPOSE_BIN}"
-    chmod +x "${COMPOSE_BIN}"
-    echo "Installed docker-compose v2"
-else
+    URL=$(curl 'https://api.github.com/repos/docker/compose/releases' | \
+        jq '.[] | select(.name = ("v" + $ver))' --arg "ver" "${TARGET_VERSION}" | \
+        jq -r '.assets[].browser_download_url | select(endswith("docker-compose-linux-x86_64"))')
+    curl --fail -L "$URL" -o docker-compose
+    chmod +x docker-compose
+    sudo mv docker-compose "${COMPOSE_BIN}"
+    echo "Installed docker-compose v${TARGET_VERSION}"
+elif [["${TARGET_VERSION}" = 2.* ]]; then
     echo "Install docker-compose v1: ${TARGET_VERSION}"
     curl -fsSL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o docker-compose
     chmod +x docker-compose
     sudo mv docker-compose "${COMPOSE_BIN}"
+    echo "Installed docker-compose v1"
+else
+    echo "Unsupported version: ${TARGET_VERSION}"
+    exit 1
 fi
 
 docker-compose -v || docker-compose version || docker-compose
