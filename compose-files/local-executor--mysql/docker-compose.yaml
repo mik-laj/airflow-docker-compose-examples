@@ -27,8 +27,6 @@
 #                              Default: apache/airflow:2.2.0-python3.8
 # AIRFLOW_UID                - User ID in Airflow containers
 #                              Default: 50000
-# AIRFLOW_GID                - Group ID in Airflow containers
-#                              Default: 50000
 # _AIRFLOW_WWW_USER_USERNAME - Username for the administrator account.
 #                              Default: airflow
 # _AIRFLOW_WWW_USER_PASSWORD - Password for the administrator account.
@@ -52,7 +50,7 @@ x-airflow-common:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
-  user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
+  user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
     mysql:
