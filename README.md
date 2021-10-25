@@ -26,21 +26,33 @@ For convenience, we generated some examples and tested some `docker-compose.yaml
 
 If you only need an environment that uses only one worker, you can use [Local Executor](http://airflow.apache.org/docs/apache-airflow/2.1.4/executor/local.html).
 
+**Apache Airflow with Local Executor with PostgreSQL database (recommended)**
+
+```shell
+curl -sSLO https://raw.githubusercontent.com/mik-laj/airflow-docker-compose-examples/compose-files/local-executor--postgres/docker-compose.yaml
+```
+
 **Apache Airflow with Local Executor with MySQL database**
 
 ```shell
 curl -sSLO https://raw.githubusercontent.com/mik-laj/airflow-docker-compose-examples/compose-files/local-executor--mysql/docker-compose.yaml
 ```
 
-**Apache Airflow with Local Executor with PostgreSQL database**
+**Apache Airflow with Local Executor with Microsoft SQL database**
 
 ```shell
-curl -sSLO https://raw.githubusercontent.com/mik-laj/airflow-docker-compose-examples/compose-files/local-executor--postgres/docker-compose.yaml
+curl -sSLO https://raw.githubusercontent.com/mik-laj/airflow-docker-compose-examples/compose-files/local-executor--mssql/docker-compose.yaml
 ```
 
 ### Celery Executor
 
 If you need an environment that is similar to what common production environments look like, then you can use [Celery Executor](http://airflow.apache.org/docs/apache-airflow/2.1.4/executor/celery.html).
+
+**Apache Airflow with Celery Executor with PostgreSQL database (recommended)**
+
+```shell
+curl -sSLO https://raw.githubusercontent.com/mik-laj/airflow-docker-compose-examples/compose-files/celery-executor--postgres/docker-compose.yaml
+```
 
 **Apache Airflow with Celery Executor with MySQL database**
 
@@ -48,10 +60,10 @@ If you need an environment that is similar to what common production environment
 curl -sSLO https://raw.githubusercontent.com/mik-laj/airflow-docker-compose-examples/compose-files/celery-executor--mysql/docker-compose.yaml
 ```
 
-**Apache Airflow with Celery Executor with PostgreSQL database**
+**Apache Airflow with Celery Executor with Microsoft SQL database**
 
 ```shell
-curl -sSLO https://raw.githubusercontent.com/mik-laj/airflow-docker-compose-examples/compose-files/celery-executor--postgres/docker-compose.yaml
+curl -sSLO https://raw.githubusercontent.com/mik-laj/airflow-docker-compose-examples/compose-files/celery-executor--mssql/docker-compose.yaml
 ```
 
 ## Generate your `docker-compose.yaml` file
@@ -65,13 +77,13 @@ Only latest version (2.2.0) is tested on CI and published in this repo.
 ```
 usage: ./render.py [-h] --executor {CeleryExecutor,LocalExecutor}
                    --airflow-version AIRFLOW_VERSION
-                   [--db-backend {postgres,mysql}]
+                   [--db-backend {postgres,mysql,mssql}]
 
 optional arguments:
   -h, --help            show this help message and exit
   --executor {CeleryExecutor,LocalExecutor}
   --airflow-version AIRFLOW_VERSION
-  --db-backend {postgres,mysql}
+  --db-backend {postgres,mysql,mssql}
 
 ```
 <!-- USAGE_END -->

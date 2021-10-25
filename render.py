@@ -62,7 +62,10 @@ def render_docker_compose(*, airflow_version: str, executor: str, db_backend: st
     try:
         validate_docker_compose(text_content)
     except:
-        print(text_content, file=sys.stderr)
+        print(
+            "\n".join(f"{line_no:4} {content}" for line_no, content in enumerate(text_content.splitlines())),
+            file=sys.stderr,
+        )
         raise
     return text_content
 
@@ -73,7 +76,7 @@ def get_parser() -> ArgumentParser:
     )
     parser.add_argument('--executor', choices=('CeleryExecutor', 'LocalExecutor'), required=True)
     parser.add_argument('--airflow-version', type=semver.VersionInfo.parse, required=True)
-    parser.add_argument('--db-backend', choices=("postgres", "mysql"), default="postgres")
+    parser.add_argument('--db-backend', choices=("postgres", "mysql", "mssql"), default="postgres")
 
     return parser
 
