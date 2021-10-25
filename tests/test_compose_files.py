@@ -22,7 +22,7 @@ DAG_ID = "example_bash_operator"
 DAG_RUN_ID = "test_dag_run_id"
 
 
-def api_request(method, path, base_url="http://localhost:8080/api/v1/", **kwargs) -> Dict:
+def api_request(method, path, base_url="http://localhost:8080/api/v1", **kwargs) -> Dict:
     response = httpx.request(
         method=method,
         url=f"{base_url}/{path}",
@@ -70,12 +70,12 @@ def run_cmd(args, **kwargs):
 @pytest.mark.parametrize("compose_file", COMPOSE_FILES)
 def test_valid_components(compose_file):
     with tempfile.TemporaryDirectory() as tmp_dir, tmp_chdir(tmp_dir) as orig_cwd:
-        os.mkdir("dags")
-        os.mkdir("logs")
-        os.mkdir("plugins")
+        os.mkdir(f"{tmp_dir}/dags")
+        os.mkdir(f"{tmp_dir}/logs")
+        os.mkdir(f"{tmp_dir}/plugins")
         with open(".env", "w+") as env_file:
             uid = subprocess.check_output(["id", "-u"]).decode()
-            env_file.write(f"AIRFLOW_UID={uid}\nAIRFLOW_GID=0")
+            env_file.write(f"AIRFLOW_UID={uid}\n")
         copyfile(compose_file, f"{tmp_dir}/docker-compose.yaml")
         run_cmd(
             "curl -s 'https://raw.githubusercontent.com/apache/airflow/master/airflow/example_dags/example_bash_operator.py' -o dags/example_bash_operator.py",
@@ -88,9 +88,7 @@ def test_valid_components(compose_file):
             # Wait until all containers are healthy. Unfortunately, docker-compose does not have such
             # a built-in command yet. It only has the ability to wait for containers that have dependencies,
             # but the last last containers remain without health control on startup.
-            run_cmd(
-                args=f"docker-compose ps -q | xargs -n 1 -P 8 -r {orig_cwd}/wait-for-container.sh", shell=True
-            )
+            run_cmd(f"docker-compose ps -q | xargs -n 1 -P 8 -r {orig_cwd}/wait-for-container.sh", shell=True)
             api_request("PATCH", path=f"dags/{DAG_ID}", json={"is_paused": False})
             api_request("POST", path=f"dags/{DAG_ID}/dagRuns", json={"dag_run_id": DAG_RUN_ID})
             try:
@@ -104,7 +102,7 @@ def test_valid_components(compose_file):
                 pprint(api_request("GET", f"dags/{DAG_ID}/dagRuns/{DAG_RUN_ID}/taskInstances"))
                 raise
         except:
-            run_cmd(["docker-compose", "ps"])
+            run_cmd(["docker", "ps"])
             run_cmd(["docker-compose", "logs"])
             raise
         finally:
