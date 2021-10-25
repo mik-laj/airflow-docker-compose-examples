@@ -10,8 +10,20 @@ on:  # yamllint disable-line rule:truthy
   workflow_dispatch:
 
 jobs:
-  build:
+  static-checks:
+    timeout-minutes: 5
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - uses: pre-commit/action@v2.0.3
+
+  tests:
     timeout-minutes: 20
+    needs: 
+      - static-checks
     strategy:
       fail-fast: false
       matrix:
@@ -60,6 +72,4 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      - uses: pre-commit/action@v2.0.3
-      - run: pip install -r requirements.txt
       - run: pytest tests/ --color=yes
