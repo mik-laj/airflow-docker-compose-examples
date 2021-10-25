@@ -24,7 +24,7 @@ if [[ "${TARGET_VERSION}" == "latest" ]]; then
     chmod +x docker-compose
     sudo mv docker-compose "${COMPOSE_BIN}"
     echo "Installed docker-compose v2 (latest)"
-elif [["${TARGET_VERSION}" = 2.* ]]; then
+elif [[ "${TARGET_VERSION}" = 2.* ]]; then
     echo "Install docker-compose v2: ${TARGET_VERSION}"
     URL=$(curl 'https://api.github.com/repos/docker/compose/releases' | \
         jq '.[] | select(.name = ("v" + $ver))' --arg "ver" "${TARGET_VERSION}" | \
@@ -33,9 +33,9 @@ elif [["${TARGET_VERSION}" = 2.* ]]; then
     chmod +x docker-compose
     sudo mv docker-compose "${COMPOSE_BIN}"
     echo "Installed docker-compose v${TARGET_VERSION}"
-elif [["${TARGET_VERSION}" = 2.* ]]; then
+elif [[ "${TARGET_VERSION}" = 1.* ]]; then
     echo "Install docker-compose v1: ${TARGET_VERSION}"
-    curl -fsSL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o docker-compose
+    curl -fsSL "https://github.com/docker/compose/releases/download/${TARGET_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o docker-compose
     chmod +x docker-compose
     sudo mv docker-compose "${COMPOSE_BIN}"
     echo "Installed docker-compose v1"
