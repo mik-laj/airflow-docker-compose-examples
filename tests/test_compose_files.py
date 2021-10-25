@@ -88,9 +88,7 @@ def test_valid_components(compose_file):
             # Wait until all containers are healthy. Unfortunately, docker-compose does not have such
             # a built-in command yet. It only has the ability to wait for containers that have dependencies,
             # but the last last containers remain without health control on startup.
-            run_cmd(
-                f"docker-compose ps -q | xargs -n 1 -P 8 -r {orig_cwd}/wait-for-container.sh", shell=True
-            )
+            run_cmd(f"docker-compose ps -q | xargs -n 1 -P 8 -r {orig_cwd}/wait-for-container.sh", shell=True)
             api_request("PATCH", path=f"dags/{DAG_ID}", json={"is_paused": False})
             api_request("POST", path=f"dags/{DAG_ID}/dagRuns", json={"dag_run_id": DAG_RUN_ID})
             try:
