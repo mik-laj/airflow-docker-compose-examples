@@ -26,7 +26,7 @@ For convenience, we generated some examples and tested some `docker-compose.yaml
 
 If you only need an environment that uses only one worker, you can use [Local Executor](http://airflow.apache.org/docs/apache-airflow/2.1.4/executor/local.html).
 
-**Apache Airflow with Local Executor with PostgreSQL database (recommended) **
+**Apache Airflow with Local Executor with PostgreSQL database (recommended)**
 
 ```shell
 curl -sSLO https://raw.githubusercontent.com/mik-laj/airflow-docker-compose-examples/compose-files/local-executor--postgres/docker-compose.yaml
@@ -48,7 +48,7 @@ curl -sSLO https://raw.githubusercontent.com/mik-laj/airflow-docker-compose-exam
 
 If you need an environment that is similar to what common production environments look like, then you can use [Celery Executor](http://airflow.apache.org/docs/apache-airflow/2.1.4/executor/celery.html).
 
-**Apache Airflow with Celery Executor with PostgreSQL database**
+**Apache Airflow with Celery Executor with PostgreSQL database (recommended)**
 
 ```shell
 curl -sSLO https://raw.githubusercontent.com/mik-laj/airflow-docker-compose-examples/compose-files/celery-executor--postgres/docker-compose.yaml
