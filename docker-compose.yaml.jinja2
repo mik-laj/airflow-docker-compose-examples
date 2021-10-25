@@ -201,11 +201,15 @@ services:
   airflow-triggerer:
     <<: *airflow-common
     command: triggerer
+{% if semver_compare(airflow_version, "2.2.0") > 0  %}
     healthcheck:
       test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
       interval: 10s
       timeout: 10s
       retries: 5
+{% else %}
+    # No health check as it doesn't work in this version.
+{% endif %}
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
