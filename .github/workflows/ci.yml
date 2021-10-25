@@ -22,7 +22,7 @@ jobs:
 
   tests:
     timeout-minutes: 20
-    needs: 
+    needs:
       - static-checks
     strategy:
       fail-fast: false
