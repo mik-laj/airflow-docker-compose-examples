@@ -15,6 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 #
+{% set airflow_image_name = "apache/airflow:" + airflow_version + "-python3.8" %}
 
 {% macro db_pretty_name(name) -%}
     {%- if db_backend == 'postgres' -%}
@@ -42,10 +43,8 @@
 # The following variables are supported:
 #
 # AIRFLOW_IMAGE_NAME         - Docker image name used to run Airflow.
-#                              Default: apache/airflow:{{ airflow_version }}
+#                              Default: {{ airflow_image_name }}
 # AIRFLOW_UID                - User ID in Airflow containers
-#                              Default: 50000
-# AIRFLOW_GID                - Group ID in Airflow containers
 #                              Default: 50000
 # _AIRFLOW_WWW_USER_USERNAME - Username for the administrator account.
 #                              Default: airflow
@@ -56,7 +55,7 @@
 ---
 x-airflow-common:
   &airflow-common
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:{{ airflow_version }}}
+  image: ${AIRFLOW_IMAGE_NAME:-{{ airflow_image_name }}}
   environment:
     &airflow-common-env
 {% if executor == "CeleryExecutor" %}
@@ -98,7 +97,7 @@ x-airflow-common:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
-  user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-50000}"
+  user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
 {% if executor == "CeleryExecutor" %}
@@ -246,6 +245,26 @@ services:
       interval: 10s
       timeout: 10s
       retries: 5
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+{% endif %}
+{% if semver_compare(airflow_version, "2.2.0") >= 0  %}
+  airflow-triggerer:
+    <<: *airflow-common
+    command: triggerer
+{% if semver_compare(airflow_version, "2.2.0") > 0  %}
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
+      interval: 10s
+      timeout: 10s
+      retries: 5
+{% else %}
+    # No health check as it doesn't work in this version.
+{% endif %}
     restart: always
     depends_on:
       <<: *airflow-common-depends-on

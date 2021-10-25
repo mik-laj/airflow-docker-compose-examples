@@ -11,6 +11,7 @@ on:  # yamllint disable-line rule:truthy
 
 jobs:
   build:
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -46,7 +47,7 @@ jobs:
           ./scripts/install_compose.sh "${COMPOSE_VERSION}"
       - if: matrix.airflow_version == 'main'
         env:
-          AIRFLOW_IMAGE_NAME: 'ghcr.io/apache/airflow/main/prod/python3.6:latest'
+          AIRFLOW_IMAGE_NAME: 'ghcr.io/apache/airflow/main/prod/python3.7:latest'
         run: |
           echo "AIRFLOW_IMAGE_NAME=${AIRFLOW_IMAGE_NAME}" >> $GITHUB_ENV
       - uses: actions/setup-python@v2
