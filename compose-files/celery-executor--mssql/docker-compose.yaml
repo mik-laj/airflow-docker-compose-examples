@@ -152,7 +152,11 @@ services:
   airflow-triggerer:
     <<: *airflow-common
     command: triggerer
-    # No health check as it doesn't work in this version.
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
+      interval: 10s
+      timeout: 10s
+      retries: 5
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
