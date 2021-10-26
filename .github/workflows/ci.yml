@@ -10,20 +10,20 @@ on:  # yamllint disable-line rule:truthy
   workflow_dispatch:
 
 jobs:
-  static-checks:
-    timeout-minutes: 5
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-      - uses: pre-commit/action@v2.0.3
+  # static-checks:
+  #   timeout-minutes: 5
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-python@v2
+  #       with:
+  #         python-version: '3.8'
+  #     - uses: pre-commit/action@v2.0.3
 
   tests:
     timeout-minutes: 20
-    needs:
-      - static-checks
+    # needs:
+    #   - static-checks
     strategy:
       fail-fast: false
       matrix:
@@ -36,7 +36,7 @@ jobs:
           - 2.0.0
           - latest
         airflow_version:
-          - current
+#         - current
           - main
     concurrency:
       group: >-
@@ -60,7 +60,7 @@ jobs:
           ./scripts/install_compose.sh "${COMPOSE_VERSION}"
       - if: matrix.airflow_version == 'main'
         env:
-          AIRFLOW_IMAGE_NAME: 'ghcr.io/apache/airflow/main/prod/python3.7:latest'
+          AIRFLOW_IMAGE_NAME: 'apache/airflow:2.2.1rc1-python3.9'
         run: |
           echo "AIRFLOW_IMAGE_NAME=${AIRFLOW_IMAGE_NAME}" >> $GITHUB_ENV
       - uses: actions/setup-python@v2
