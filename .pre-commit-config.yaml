@@ -28,6 +28,11 @@ repos:
           - PyYAML
           - semver
           - jinja2
+      - id: pre_commit_insert_version
+        name: Insert Airflow version in README.md
+        language: python
+        entry: ./scripts/pre_commit_insert_version.py
+        files: '^README\.md|requirements-airflow\.txt$'
   - repo: https://github.com/Lucas-C/pre-commit-hooks
     rev: v1.1.10
     hooks:
