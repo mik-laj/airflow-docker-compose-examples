@@ -2,7 +2,7 @@
 
 Configuring Docker-Compose deployments requires in-house knowledge of Docker Compose. This repository contains a few examples showing some popular customization that will allow you to easily adapt the environment to your requirements If none of the examples meet your expectations, you can also use a script that generates files based on a template, just like Helm, to generate files for Kubernetes.
 
-All pre-generated examples are automatically tested on CI to verify their correctness. The published files are compatible with Airflow 2.2.0. Files for older versions can be created using [a generator](#generate-your-docker-composeyaml-file).
+All pre-generated examples are automatically tested on CI to verify their correctness. The published files are compatible with Airflow v<!-- AIRFLOW_VERSION_START -->2.2.1<!-- AIRFLOW_VERSION_END -->. Files for older versions can be created using [a generator](#generate-your-docker-composeyaml-file).
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -71,7 +71,7 @@ curl -sSLO https://raw.githubusercontent.com/mik-laj/airflow-docker-compose-exam
 All examples in this repository generated from one Jinja2 template - [`./docker-compose.yaml.jinja2`](./docker-compose.yaml.jinja2). If you need to generate an example in a less typical configuration, you can do so with the [`./render.py`](./render.py) script.
 
 Supported Airflow version: 2.1.0 and newer.
-Only latest version (2.2.0) is tested on CI and published in this repo.
+Only latest version (<!-- AIRFLOW_VERSION_START -->2.2.1<!-- AIRFLOW_VERSION_END -->) is tested on CI and published in this repo.
 
 <!-- USAGE_START -->
 ```
