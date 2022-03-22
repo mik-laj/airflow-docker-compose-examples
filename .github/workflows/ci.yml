@@ -14,7 +14,7 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
         with:
           python-version: '3.8'
@@ -47,7 +47,7 @@ jobs:
       cancel-in-progress: true
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - if: matrix.compose_version == '2.0.0' || matrix.compose_version == 'latest'
         name: "Update Docker CLI"
         run: |
