@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.8'
       - uses: pre-commit/action@v2.0.3
@@ -63,7 +63,7 @@ jobs:
           AIRFLOW_IMAGE_NAME: 'ghcr.io/apache/airflow/main/prod/python3.7:latest'
         run: |
           echo "AIRFLOW_IMAGE_NAME=${AIRFLOW_IMAGE_NAME}" >> $GITHUB_ENV
-      - uses: actions/setup-python@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.8'
       - uses: actions/cache@v3
